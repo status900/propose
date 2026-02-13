@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project: Forever | Mahdi's Vision</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;500&family=Playfair+Display:ital,wght@0,700;1,400&family=Montserrat:wght@300;400&family=Hind+Siliguri:wght@300;500&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+    <style>
+        :root {
+            --bg: #050505;
+            --gold: #d4af37;
+            --text-dim: #a8a8a8;
+            --error-red: #ff4d4d;
+            --glass: rgba(255, 255, 255, 0.07);
+        }
+
+        body {
+            background-color: var(--bg); color: white;
+            font-family: 'Montserrat', sans-serif; margin: 0; overflow-x: hidden;
+        }
+
+        body.locked { overflow: hidden; }
+
+        /* --- Terminal Loader --- */
+        #loader {
+            position: fixed; inset: 0; background: black; z-index: 10000;
+            display: flex; flex-direction: column; justify-content: center;
+            padding: 10%; font-family: 'Fira Code', monospace; color: #00ff00;
+        }
+
+        .cursor { display: inline-block; width: 10px; height: 20px; background: #00ff00; animation: blink 1s infinite; }
+        @keyframes blink { 50% { opacity: 0; } }
+
+        /* --- Sections --- */
+        #main-content { opacity: 0; display: none; }
+        section { min-height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 60px 20px; }
+
+        .hero h1 { font-family: 'Playfair Display', serif; font-size: clamp(2.5rem, 8vw, 5rem); font-style: italic; text-align: center; }
+
+        /* --- Poet Vows Section --- */
+        .promises-container { max-width: 850px; margin: auto; font-family: 'Hind Siliguri', sans-serif; }
+        
+        .promise-card {
+            background: rgba(255, 255, 255, 0.02);
+            border-left: 2px solid var(--gold);
+            padding: 35px; margin: 40px 0;
+            border-radius: 0 15px 15px 0;
+            transition: 0.4s;
+        }
+
+        .poet-line { font-style: italic; font-size: 1.4rem; color: #fff; margin-bottom: 15px; display: block; }
+        .poet-ref { color: var(--gold); font-family: 'Fira Code', monospace; font-size: 0.85rem; letter-spacing: 2px; }
+        .my-note { color: var(--text-dim); margin-top: 15px; font-size: 0.95rem; }
+
+        /* --- Buttons --- */
+        .glow-btn {
+            background: none; border: 1px solid var(--gold); color: var(--gold);
+            padding: 22px 65px; font-size: 1.4rem; cursor: pointer;
+            transition: all 0.4s; text-transform: uppercase; letter-spacing: 3px;
+        }
+
+        .glow-btn:hover { background: var(--gold); color: black; box-shadow: 0 0 50px var(--gold); }
+
+        #no-btn {
+            background: none; border: 1px solid rgba(255,77,77,0.3); color: var(--error-red);
+            padding: 10px 25px; cursor: pointer; font-family: 'Fira Code'; margin-top: 30px;
+        }
+
+        /* --- Glassmorphic Success Modal --- */
+        #success-modal {
+            position: fixed; inset: 0;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(10px);
+            display: none; justify-content: center; align-items: center;
+            z-index: 10001; opacity: 0;
+        }
+
+        .modal-card {
+            background: var(--glass);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 50px; border-radius: 30px;
+            max-width: 600px; text-align: center;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.5);
+            position: relative;
+        }
+
+        .modal-card h2 { font-family: 'Playfair Display', serif; color: var(--gold); font-size: 2.2rem; margin-bottom: 20px; }
+        .modal-card p { font-family: 'Hind Siliguri', sans-serif; line-height: 1.8; color: #eee; font-size: 1.1rem; }
+        .close-btn { margin-top: 30px; background: var(--gold); border: none; padding: 10px 25px; border-radius: 5px; cursor: pointer; font-weight: bold; }
+
+    </style>
+</head>
+<body class="locked">
+
+    <div id="loader">
+        <div id="terminal-text"></div><span class="cursor"></span>
+    </div>
+
+    <div id="success-modal">
+        <div class="modal-card">
+            <h2>Success: Heart Synced!</h2>
+            <p style="color: var(--gold); font-family: 'Fira Code'; font-size: 0.9rem; margin-bottom: 25px;">Mahdi is now the happiest person in the universe!</p>
+            <p>
+                "যদি মনে পড়ে তবে দিও দেখা কোনো এক সাঁঝে,<br>
+                তোমার আমার ভালোবাসা মিশে রবে এ জীবনের মাঝে।"
+            </p>
+            <p style="font-style: italic; font-size: 0.9rem; opacity: 0.8;">
+                তোমার প্রতিটি 'হ্যাঁ' আমার পৃথিবীর কক্ষপথ বদলে দেয়। <br> মহাবিশ্বের সবচেয়ে সুন্দর অংশটি আজ আমার হলো।
+            </p>
+            <button class="close-btn" onclick="closeModal()">Close Connection</button>
+        </div>
+    </div>
+
+    <div id="main-content">
+        <section class="hero">
+            <h1 id="hero-title">Architecting Our Future</h1>
+            <p style="color: var(--gold); letter-spacing: 6px;">DESIGNED BY HASAN AL MAHDI</p>
+        </section>
+
+        <section class="promises-container">
+            <h2 style="font-family: 'Playfair Display'; font-size: 3rem; text-align: center; margin-bottom: 80px;">The Vows of Literature</h2>
+
+            <div class="promise-card">
+                <span class="poet-line">"তুমি রবে নীরবে হৃদয়ে মম।"</span>
+                <span class="poet-ref">— রবীন্দ্রনাথ ঠাকুর</span>
+                <p class="my-note">আমার এই সিস্টেমের প্রতিটি লজিক কেবল তোমারই নীরব উপস্থিতিতে সচল থাকে।</p>
+            </div>
+
+            <div class="promise-card">
+                <span class="poet-line">"আমারে দু’দণ্ড শান্তি দিয়েছিল নাটোরের বনলতা সেন।"</span>
+                <span class="poet-ref">— জীবনানন্দ দাশ</span>
+                <p class="my-note">সারাদিনের ক্লান্তি শেষে তুমিই আমার একমাত্র প্রশান্তির নাম।</p>
+            </div>
+
+            <div class="promise-card">
+                <span class="poet-line">"কষ্ট নেবে কষ্ট, হরেক রকম কষ্ট আছে।"</span>
+                <span class="poet-ref">— হেলাল হাফিজ</span>
+                <p class="my-note">তোমার জীবনের সবটুকু কষ্ট আমি আমার কোড দিয়ে ডিলিট করে দিতে চাই।</p>
+            </div>
+
+            <div class="promise-card">
+                <span class="poet-line">"হাত বাড়িয়ে দাও, আমি ছুঁয়ে দিই তোমার জীবন।"</span>
+                <span class="poet-ref">— পূর্ণেন্দু পত্রী</span>
+                <p class="my-note">আমার হাতটা শক্ত করে ধরো, বাকি পথটুকু আমরা একসাথে পাড়ি দেব।</p>
+            </div>
+
+            <div class="promise-card">
+                <span class="poet-line">"কেউ কথা রাখেনি, তেত্রিশ বছর কাটলো, কেউ কথা রাখেনি।"</span>
+                <span class="poet-ref">— সুনীল গঙ্গোপাধ্যায়</span>
+                <p class="my-note">সবাই কথা না রাখলেও, মাহদী কথা দিবে এবং কথা রাখবে—আজীবন।</p>
+            </div>
+
+            <div class="promise-card">
+                <span class="poet-line">"তবু ভালোবেসো, আরও ভালোবেসো।"</span>
+                <span class="poet-ref">— রুদ্র মুহম্মদ শহিদুল্লাহ</span>
+                <p class="my-note">পৃথিবীর সবটুকু ঘৃণা একদিকে আর আমার তোমার প্রতি ভালোবাসা একদিকে।</p>
+            </div>
+        </section>
+
+        <section class="final-cta">
+            <h2 style="font-family: 'Playfair Display'; font-size: 2.8rem; margin-bottom: 50px;">Will you be the 'Main' in Mahdi's Life?</h2>
+            <button class="glow-btn" onclick="celebrate()">EXECUTE: YES</button>
+            <button id="no-btn" onmouseover="dodge()">[ ERROR: NO.NOT_ALLOWED ]</button>
+        </section>
+    </div>
+
+    <script>
+        gsap.registerPlugin(ScrollTrigger);
+
+        const terminalStrings = [
+            "> User Identity: Hasan Al Mahdi [Verified]",
+            "> Loading Poetic Assets... Done.",
+            "> Setting Heart_Rain frequency: High.",
+            "> Accessing The Soul... Done.",
+            "> Opening Mahdi's Heart for You..."
+        ];
+
+        let line = 0;
+        const terminal = document.getElementById('terminal-text');
+
+        function typeTerminal() {
+            if (line < terminalStrings.length) {
+                terminal.innerHTML += terminalStrings[line] + "<br>";
+                line++;
+                setTimeout(typeTerminal, 600);
+            } else {
+                setTimeout(revealSite, 1000);
+            }
+        }
+
+        function revealSite() {
+            window.scrollTo(0, 0);
+            gsap.to("#loader", { 
+                opacity: 0, duration: 1.5, 
+                onComplete: () => {
+                    document.getElementById('loader').style.display = 'none';
+                    document.getElementById('main-content').style.display = 'block';
+                    gsap.to("#main-content", { opacity: 1, duration: 2 });
+                    document.body.classList.remove('locked');
+                    animateElements();
+                }
+            });
+        }
+
+        function animateElements() {
+            gsap.from("#hero-title", { y: 60, opacity: 0, duration: 2 });
+            gsap.utils.toArray(".promise-card").forEach(card => {
+                gsap.from(card, {
+                    scrollTrigger: { trigger: card, start: "top 85%" },
+                    x: -100, opacity: 0, duration: 1.5
+                });
+            });
+        }
+
+        function dodge() {
+            const btn = document.getElementById('no-btn');
+            btn.style.position = 'fixed';
+            btn.style.left = Math.random() * (window.innerWidth - 150) + 'px';
+            btn.style.top = Math.random() * (window.innerHeight - 50) + 'px';
+            btn.innerText = "[ ACCESS_DENIED ]";
+        }
+
+        function celebrate() {
+            // Start Heart Rain
+            var end = Date.now() + (15 * 1000);
+            var colors = ['#ff0000', '#ff69b4', '#ffffff'];
+
+            (function frame() {
+              confetti({
+                particleCount: 3, angle: 60, spread: 55, origin: { x: 0 },
+                colors: colors, shapes: ['heart']
+              });
+              confetti({
+                particleCount: 3, angle: 120, spread: 55, origin: { x: 1 },
+                colors: colors, shapes: ['heart']
+              });
+              if (Date.now() < end) requestAnimationFrame(frame);
+            }());
+
+            // Show Glassmorphic Modal
+            const modal = document.getElementById('success-modal');
+            modal.style.display = 'flex';
+            gsap.to(modal, { opacity: 1, duration: 1 });
+            document.body.classList.add('locked'); // পপআপ চলাকালীন স্ক্রল লক
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('success-modal');
+            gsap.to(modal, { opacity: 0, duration: 0.5, onComplete: () => {
+                modal.style.display = 'none';
+                document.body.classList.remove('locked');
+            }});
+        }
+
+        window.onload = typeTerminal;
+    </script>
+</body>
+</html>
